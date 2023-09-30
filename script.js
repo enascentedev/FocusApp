@@ -55,7 +55,7 @@ function alterarContexto(contexto) {
 		contexto.classList.remove("active");
 	});
 	html.setAttribute("data-contexto", contexto);
-	banner.setAttribute("src", "imagens/" + contexto + ".png");
+	banner.setAttribute("src", `/imagens/${contexto}.png`);
 	switch (contexto) {
 		case "foco":
 			titulo.innerHTML = `
@@ -79,9 +79,22 @@ function alterarContexto(contexto) {
 
 const contagemRegressiva = () => {
 	if (tempoDecorridoEmSegundos <= 0) {
-		audioTempoFinalizado.play();
-		alert("Tempo finalizado!");
 		zerar();
+		const focoAtivo = html.getAttribute("data-contexto") === "foco";
+		if (focoAtivo) {
+			var event = new CustomEvent("TarefaFinalizada", {
+				detail: {
+					message: "A tarefa foi concluída com sucesso!",
+					time: new Date(),
+				},
+				bubbles: true,
+				cancelable: true,
+			});
+			document.dispatchEvent(event);
+			tempoDecorridoEmSegundos = 5;
+			mostrarTempo();
+		}
+
 		return;
 	}
 	tempoDecorridoEmSegundos -= 1;
@@ -105,7 +118,7 @@ function iniciarOuPausar() {
 function zerar() {
 	clearInterval(intervaloId);
 	iniciarOuPausarBt.textContent = "Começar";
-	iniciarOuPausarBtIcone.setAttribute("src", "/imagens/play_arrow.png");
+	iniciarOuPausarBtIcone.setAttribute("src", `/imagens/play_arrow.png`);
 	intervaloId = null;
 }
 
